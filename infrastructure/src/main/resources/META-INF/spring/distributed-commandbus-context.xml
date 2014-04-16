@@ -1,0 +1,27 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:axon="http://www.axonframework.org/schema/core"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+	<!-- Setup the distributed command bus using the Special JGroupsConnector 
+		factory bean -->
+	<bean id="commandBus"
+		class="org.axonframework.samples.trader.infra.bus.DistributedCommandBusExt">
+		<constructor-arg ref="jGroupsConnector" />
+	</bean>
+
+	<!-- Setup the gateway using the distributed command bus -->
+	<bean id="commandGateway"
+		class="org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean">
+		<property name="commandBus" ref="commandBus" />
+	</bean>
+
+	<!-- Setup the factory bean for the JGroupsConnector -->
+	<bean id="jGroupsConnector"
+		class="org.axonframework.commandhandling.distributed.jgroups.JGroupsConnectorFactoryBean">
+		<property name="configuration" value="tcp_gossip.xml" />
+		<property name="clusterName" value="${clusterName}" />
+		<property name="loadFactor" value="${loadFactor}" />
+	</bean>
+</beans>

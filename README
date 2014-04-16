@@ -28,6 +28,7 @@ Running the sample
 - Make sure you have your mongo instance running
 - Make sure you have your RabbitMQ instance running
 - Make sure you have your GossipRouter running
+>>in this example,mq and router are running at 10.1.79.25:5672 and 10.1.79.25:12001 respectively
 - Step into the main folder of the project
 > mvn clean install
 > cd web-ui

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ~ Copyright (c) 2010-2012. Axon Framework ~ ~ Licensed under the Apache 
+	License, Version 2.0 (the "License"); ~ you may not use this file except 
+	in compliance with the License. ~ You may obtain a copy of the License at 
+	~ ~ http://www.apache.org/licenses/LICENSE-2.0 ~ ~ Unless required by applicable 
+	law or agreed to in writing, software ~ distributed under the License is 
+	distributed on an "AS IS" BASIS, ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+	KIND, either express or implied. ~ See the License for the specific language 
+	governing permissions and ~ limitations under the License. -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:axon="http://www.axonframework.org/schema/core"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.axonframework.org/schema/core http://www.axonframework.org/schema/axon-core.xsd
+     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.0.xsd">
+
+	<bean id="eventBus" class="org.axonframework.eventhandling.ClusteringEventBus">
+		<constructor-arg>
+			<bean class="org.axonframework.eventhandling.DefaultClusterSelector">
+				<constructor-arg ref="cluster1" />
+			</bean>
+		</constructor-arg>
+		<constructor-arg ref="terminal" />
+	</bean>
+
+	<rabbit:fanout-exchange id="eventBusExchange"
+		name="${axon.rabbitmq.exchange-name}" durable="false" auto-delete="true">
+		<rabbit:bindings>
+			<rabbit:binding queue="eventBusQueue" />
+		</rabbit:bindings>
+	</rabbit:fanout-exchange>
+
+
+	<rabbit:queue id="eventBusQueue" name="${axon.rabbitmq.cluster-name}-queue"
+		auto-delete="true" durable="false" />
+
+	<rabbit:admin id="rabbitAdmin" auto-startup="true"
+		connection-factory="connectionFactory" />
+	<rabbit:connection-factory id="connectionFactory"
+		host="${axon.rabbitmq.host}" username="${axon.rabbitmq.username}"
+		password="${axon.rabbitmq.password}" port="${axon.rabbitmq.port}" />
+
+	<bean id="cluster1" name="${axon.rabbitmq.cluster-name}"
+		class="org.axonframework.eventhandling.SimpleClusterFactoryBean">
+		<property name="metaDataValues">
+			<map>
+				<entry key="AMQP.Config">
+					<bean
+						class="org.axonframework.eventhandling.amqp.spring.SpringAMQPConsumerConfiguration">
+						<property name="queueName" value="${axon.rabbitmq.cluster-name}-queue" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean
+		class="org.axonframework.eventhandling.amqp.spring.ListenerContainerLifecycleManager">
+		<property name="defaultConfiguration">
+			<bean
+				class="org.axonframework.eventhandling.amqp.spring.SpringAMQPConsumerConfiguration">
+				<property name="prefetchCount" value="100" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="terminal"
+		class="org.axonframework.eventhandling.amqp.spring.SpringAMQPTerminal">
+		<property name="exchange" ref="eventBusExchange" />
+		<property name="transactional" value="true" />
+	</bean>
+
+	<bean id="serializer" class="org.axonframework.serializer.xml.XStreamSerializer" />
+
+</beans>

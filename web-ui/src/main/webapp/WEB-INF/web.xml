@@ -30,6 +30,8 @@
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>
+        	classpath:META-INF/spring/distributed-commandbus-context.xml,
+            classpath:META-INF/spring/distributed-eventbus-context.xml,
             classpath:META-INF/spring/cqrs-infrastructure-context.xml,
             classpath:META-INF/spring/persistence-infrastructure-context.xml,
             classpath:META-INF/spring/query-context.xml,
