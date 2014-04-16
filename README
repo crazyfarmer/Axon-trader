@@ -1,5 +1,6 @@
 This is a sample application to demonstrate the possibilities of the Axon framework in a high load environment. We have chosen to create a Trader application. All you need to run it is java, mongodb and maven.
 
+make it distributed
 Initial setup
 -------------
 - Make sure you have java installed
