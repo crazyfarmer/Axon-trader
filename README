@@ -1,6 +1,6 @@
+This is a distributed bus version based on axon-trade project.
 This is a sample application to demonstrate the possibilities of the Axon framework in a high load environment. We have chosen to create a Trader application. All you need to run it is java, mongodb and maven.
 
-make it distributed
 Initial setup
 -------------
 - Make sure you have java installed
@@ -12,6 +12,12 @@ http://maven.apache.org/download.html#Installation
 - Make sure you have mongodb installed
 http://www.mongodb.org/display/DOCS/Quickstart
 
+- Make sure you hava RabbitMQ installed
+https://www.rabbitmq.com/download.html
+
+- Make sure you have JGroups installed
+http://jgroups.org/
+
 When using mongodb in a test environment, it is easiest to just start one instance with the default port on your local machine. If you want another setup, you can find more information in the advanced configuration section.
 
 Running the sample
@@ -20,6 +26,8 @@ Running the sample
 
 * Maven
 - Make sure you have your mongo instance running
+- Make sure you have your RabbitMQ instance running
+- Make sure you have your GossipRouter running
 - Step into the main folder of the project
 > mvn clean install
 > cd web-ui
